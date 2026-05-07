@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ШАШЛЫК // @typespace</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --gray: #888;
+    --border: 2px solid #f5f5f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Pixel grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px);
+    background-size: 8px 8px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    border-bottom: var(--border);
+    padding-bottom: 24px;
+  }
+
+  .logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    line-height: 1.8;
+    color: var(--white);
+    text-decoration: none;
+    letter-spacing: 0;
+  }
+
+  .logo span {
+    display: block;
+    color: var(--gray);
+    font-size: 7px;
+  }
+
+  .pixel-fire {
+    font-size: 28px;
+    image-rendering: pixelated;
+    animation: flicker 0.8s infinite alternate;
+  }
+
+  @keyframes flicker {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(0.95) rotate(-3deg); }
+    100% { opacity: 0.9; transform: scale(1.05) rotate(2deg); }
+  }
+
+  /* Title */
+  .title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: var(--gray);
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Sections */
+  .section {
+    border: var(--border);
+    margin-bottom: 2px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(245,245,240,0.15);
+    background: rgba(245,245,240,0.03);
+  }
+
+  .section-num {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--gray);
+  }
+
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .section-body {
+    padding: 20px;
+  }
+
+  /* Inputs */
+  .input-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+
+  .input-row:last-child { margin-bottom: 0; }
+
+  .input-label {
+    font-size: 11px;
+    color: var(--gray);
+    flex: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .input-control {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid rgba(245,245,240,0.3);
+  }
+
+  .btn-step {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-step:hover { background: var(--white); color: var(--black); }
+  .btn-step:active { transform: scale(0.9); }
+
+  .input-val {
+    background: transparent;
+    border: none;
+    border-left: 1px solid rgba(245,245,240,0.3);
+    border-right: 1px solid rgba(245,245,240,0.3);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    width: 56px;
+    height: 36px;
+    text-align: center;
+    outline: none;
+  }
+
+  .input-val:focus { background: rgba(245,245,240,0.05); }
+
+  /* Meat selector */
+  .meat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .meat-btn {
+    background: transparent;
+    border: 1px solid rgba(245,245,240,0.2);
+    color: var(--gray);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 10px 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .meat-btn:hover { border-color: var(--white); color: var(--white); }
+
+  .meat-btn.active {
+    background: var(--white);
+    color: var(--black);
+    border-color: var(--white);
+  }
+
+  .meat-icon {
+    font-size: 14px;
+    image-rendering: pixelated;
+  }
+
+  /* Checkbox rows */
+  .check-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(245,245,240,0.08);
+    cursor: pointer;
+  }
+
+  .check-row:last-child { border-bottom: none; }
+
+  .check-label {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+  }
+
+  .toggle {
+    width: 32px;
+    height: 16px;
+    border: 1px solid rgba(245,245,240,0.3);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+    image-rendering: pixelated;
+  }
+
+  .toggle.on { background: var(--white); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--black);
+    top: 2px;
+    left: 2px;
+    transition: left 0.15s;
+  }
+
+  .toggle.on::after { left: 18px; background: var(--black); }
+
+  /* Results */
+  .results {
+    border: 2px solid var(--white);
+    padding: 24px;
+    margin-top: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+
+  .result-cell {
+    border: 1px solid rgba(245,245,240,0.15);
+    padding: 14px;
+  }
+
+  .result-cell.big {
+    grid-column: 1 / -1;
+    background: var(--white);
+    color: var(--black);
+    border-color: var(--white);
+    padding: 18px;
+  }
+
+  .result-key {
+    font-size: 9px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .result-cell.big .result-key { color: rgba(10,10,10,0.5); }
+
+  .result-val {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .result-cell.big .result-val { font-size: 28px; }
+
+  .result-unit {
+    font-size: 10px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  .result-cell.big .result-unit { color: rgba(10,10,10,0.5); }
+
+  /* Checklist */
+  .checklist {
+    border-top: 1px solid rgba(245,245,240,0.15);
+    padding-top: 16px;
+  }
+
+  .checklist-title {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+
+  .checklist-item {
+    font-size: 10px;
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(245,245,240,0.8);
+    border-bottom: 1px solid rgba(245,245,240,0.05);
+  }
+
+  .checklist-item::before {
+    content: '▸';
+    color: var(--gray);
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+
+  .checklist-item span { color: var(--white); font-weight: 700; }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px;
+    border-top: 1px solid rgba(245,245,240,0.15);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--gray);
+  }
+
+  .footer-tag a { color: var(--white); text-decoration: none; }
+  .footer-tag a:hover { text-decoration: underline; }
+
+  /* Pixel corners */
+  .pixel-corner {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--black);
+    border: 2px solid var(--white);
+  }
+
+  .results .pixel-corner { display: none; }
+
+  /* Scanline */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @media (max-width: 480px) {
+    .title { font-size: 16px; }
+    .result-cell.big .result-val { font-size: 22px; }
+    .meat-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+
+
+  <div class="title">Калькулятор для лучших шашлыков от Тайпспейс Медиа. Рассчитаем количество мяса, угля и другие параметры.</div>
+  <div class="subtitle">Введи параметры и получи расчеты</div>
+
+  <!-- 01 People -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Количество людей</span>
+    </div>
+    <div class="section-body">
+      <div class="input-row">
+        <span class="input-label">Взрослые</span>
+        <div class="input-control">
+          <button class="btn-step" onclick="adjust('adults', -1)">−</button>
+          <input class="input-val" id="adults" type="number" value="6" min="1" max="50" oninput="calc()">
+          <button class="btn-step" onclick="adjust('adults', 1)">+</button>
+        </div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">Дети (до 12)</span>
+        <div class="input-control">
+          <button class="btn-step" onclick="adjust('kids', -1)">−</button>
+          <input class="input-val" id="kids" type="number" value="2" min="0" max="20" oninput="calc()">
+          <button class="btn-step" onclick="adjust('kids', 1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 Meat type -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Вид мяса</span>
+    </div>
+    <div class="section-body">
+      <div class="meat-grid">
+        <button class="meat-btn active" onclick="selectMeat('pork', this)">
+          <span class="meat-icon">🐷</span> Свинина
+        </button>
+        <button class="meat-btn" onclick="selectMeat('lamb', this)">
+          <span class="meat-icon">🐑</span> Баранина
+        </button>
+        <button class="meat-btn" onclick="selectMeat('chicken', this)">
+          <span class="meat-icon">🐔</span> Курица
+        </button>
+        <button class="meat-btn" onclick="selectMeat('beef', this)">
+          <span class="meat-icon">🐄</span> Говядина
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Options -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Параметры</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row" onclick="toggleOpt('heavy')">
+        <span class="check-label">Едоки с хорошим аппетитом</span>
+        <div class="toggle" id="tog-heavy"></div>
+      </div>
+      <div class="check-row" onclick="toggleOpt('marinade')">
+        <span class="check-label">Маринад (потеря веса ~20%)</span>
+        <div class="toggle on" id="tog-marinade"></div>
+      </div>
+      <div class="check-row" onclick="toggleOpt('sides')">
+        <span class="check-label">Есть гарниры и закуски</span>
+        <div class="toggle on" id="tog-sides"></div>
+      </div>
+      <div class="check-row" onclick="toggleOpt('booze')">
+        <span class="check-label">Алкоголь будет</span>
+        <div class="toggle on" id="tog-booze"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results">
+    <div class="result-grid">
+      <div class="result-cell big">
+        <div class="result-key">мясо на закупку</div>
+        <div class="result-val" id="res-meat">0</div>
+        <div class="result-unit">кг сырого мяса</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-key">на человека</div>
+        <div class="result-val" id="res-per">0</div>
+        <div class="result-unit">г / чел</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-key">шампуров</div>
+        <div class="result-val" id="res-skewers">0</div>
+        <div class="result-unit">штук</div>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <div class="checklist-title">// А еще...</div>
+      <div class="checklist-item">Лук для маринада: <span id="res-onion">0 кг</span></div>
+      <div class="checklist-item">Уголь / дрова: <span id="res-coal">0 кг</span></div>
+      <div class="checklist-item">Алюминиевая фольга: <span id="res-foil">0 м</span></div>
+      <div class="checklist-item">Одноразовые тарелки: <span id="res-plates">0 шт</span></div>
+      <div class="checklist-item">Время маринования: <span id="res-time">0 ч</span></div>
+      <div class="checklist-item">Время жарки (партии): <span id="res-cook">0 мин</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-tag">
+      <a href="https://t.me/typespace" target="_blank">@typespace</a>
+    </div>
+    <div class="footer-tag" style="color:rgba(245,245,240,0.2)">
+      v1.0 // 2026
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // State
+  const opts = {
+    heavy: false,
+    marinade: true,
+    sides: true,
+    booze: true
+  };
+
+  // Meat base grams per adult (raw, before marinade shrink)
+  const meatBase = {
+    pork: 350,
+    lamb: 380,
+    chicken: 300,
+    beef: 350
+  };
+
+  const marTime = {
+    pork: '4–8', lamb: '6–12', chicken: '2–4', beef: '8–12'
+  };
+
+  let currentMeat = 'pork';
+
+  function selectMeat(type, el) {
+    currentMeat = type;
+    document.querySelectorAll('.meat-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    calc();
+  }
+
+  function adjust(id, delta) {
+    const el = document.getElementById(id);
+    let v = parseInt(el.value) + delta;
+    const min = parseInt(el.min);
+    const max = parseInt(el.max);
+    el.value = Math.max(min, Math.min(max, v));
+    calc();
+  }
+
+  function toggleOpt(key) {
+    opts[key] = !opts[key];
+    const tog = document.getElementById('tog-' + key);
+    tog.classList.toggle('on', opts[key]);
+    calc();
+  }
+
+  function calc() {
+    const adults = parseInt(document.getElementById('adults').value) || 0;
+    const kids = parseInt(document.getElementById('kids').value) || 0;
+
+    // Effective portions
+    let baseG = meatBase[currentMeat];
+    if (opts.heavy) baseG *= 1.25;
+    if (opts.sides) baseG *= 0.85;
+
+    const adultG = baseG;
+    const kidG = baseG * 0.5;
+
+    // Raw weight before marinade
+    const totalG = adults * adultG + kids * kidG;
+    // Marinade adds ~20% to purchase weight (meat shrinks, so buy more)
+    const buyG = opts.marinade ? totalG * 1.25 : totalG;
+
+    const buyKg = buyG / 1000;
+    const perPerson = Math.round(totalG / Math.max(adults + kids * 0.5, 1));
+
+    // Skewers: ~150g per skewer of ready meat
+    const skewers = Math.ceil(totalG / 150);
+
+    // Onion: 1 onion per 500g meat = ~200g
+    const onionKg = (Math.round(buyG / 500 * 0.2 * 10) / 10);
+
+    // Coal: 1.5kg per 10 skewers
+    const coal = Math.max(2, Math.ceil(skewers / 10 * 1.5));
+
+    // Foil
+    const foil = Math.ceil((adults + kids) * 0.3);
+
+    // Plates (2 per person)
+    const plates = (adults + kids) * 2;
+
+    // Cook time: 20 min per batch of 10 skewers
+    const batches = Math.ceil(skewers / 10);
+    const cookMin = batches * 20;
+
+    // Alcohol: 0.5L per adult
+    // (already in checklist as note)
+
+    document.getElementById('res-meat').textContent = buyKg.toFixed(1);
+    document.getElementById('res-per').textContent = perPerson;
+    document.getElementById('res-skewers').textContent = skewers;
+    document.getElementById('res-onion').textContent = onionKg.toFixed(1) + ' кг';
+    document.getElementById('res-coal').textContent = coal + ' кг';
+    document.getElementById('res-foil').textContent = foil + ' м';
+    document.getElementById('res-plates').textContent = plates + ' шт';
+    document.getElementById('res-time').textContent = marTime[currentMeat] + ' ч';
+    document.getElementById('res-cook').textContent = '~' + cookMin + ' мин';
+  }
+
+  // Init
+  calc();
+</script>
+</body>
+</html>
